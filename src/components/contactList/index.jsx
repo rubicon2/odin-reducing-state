@@ -1,5 +1,5 @@
 export default function ContactList(props) {
-  const { contacts = [], onContactSelected = () => {} } = props;
+  const { contacts = [], onContactSelected = () => {}, className } = props;
 
   // This function will throw an error regardless of whether we check, but this error message is clearer.
   if (!Array.isArray(contacts))
@@ -9,7 +9,7 @@ export default function ContactList(props) {
     throw new Error('onContactSelected prop is not a function');
 
   return (
-    <div>
+    <div data-testid="contact-list" className={className}>
       <h2>Contacts</h2>
       <ul>
         {contacts.map((contact) => (

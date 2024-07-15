@@ -100,4 +100,9 @@ describe('Contact list', () => {
       ),
     ).toThrowError();
   });
+
+  it('Applies className prop to the root element of the component', () => {
+    render(<ContactList className={'someClass'} />);
+    expect(screen.getByTestId('contact-list').classList).toContain('someClass');
+  });
 });
