@@ -7,10 +7,12 @@ const contactsTestSets = [
   [
     [
       {
+        id: 0,
         firstName: 'Joanna',
         email: 'jo@megamail.com',
       },
       {
+        id: 1,
         firstName: 'Alice',
         email: 'alice@supermail.com',
       },
@@ -19,14 +21,17 @@ const contactsTestSets = [
   [
     [
       {
+        id: 7,
         firstName: 'Jimmy',
         email: 'jimmy@megamail.com',
       },
       {
+        id: 9,
         firstName: 'Timmy',
         email: 'timmy@supermail.com',
       },
       {
+        id: 13,
         firstName: 'Milena',
         email: 'milena@ultramail.com',
       },

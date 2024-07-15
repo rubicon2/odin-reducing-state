@@ -13,7 +13,9 @@ export default function ContactList(props) {
       <h2>Contacts</h2>
       <ul>
         {contacts.map((contact) => (
-          <li onClick={onContactSelected}>{contact.firstName}</li>
+          <li key={contact.id} onClick={onContactSelected}>
+            {contact.firstName}
+          </li>
         ))}
       </ul>
     </div>
