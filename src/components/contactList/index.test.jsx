@@ -1,4 +1,6 @@
 import ContactList from '.';
+import AppContext from '../../contexts/AppContext';
+import { afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -44,9 +46,35 @@ const contactsTestSets = [
   ],
 ];
 
+// Store reference to mock returned by mocked useAppDispatch, as we need to check if this gets called later.
+let dispatchMock = null;
+vi.mock('../../contexts/AppContext', async (importOriginal) => {
+  const original = await importOriginal();
+  return {
+    ...original,
+    useAppDispatch: vi.fn(() => {
+      // Just wrap original in mock function so we can check how many times it has been called.
+      dispatchMock = vi.fn(original.useAppDispatch());
+      return dispatchMock;
+    }),
+  };
+});
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
+
+afterAll(() => {
+  vi.restoreAllMocks();
+});
+
+function wrapWithContext(jsx) {
+  return <AppContext>{jsx}</AppContext>;
+}
+
 describe('Contact list', () => {
   it('Renders a list', () => {
-    render(<ContactList />);
+    render(wrapWithContext(<ContactList />));
     expect(screen.getByRole('list')).toBeDefined();
   });
 
@@ -54,16 +82,16 @@ describe('Contact list', () => {
     'Render $length list items when provided a contacts prop array of length $length',
     (data) => {
       const { contacts } = data;
-      render(<ContactList contacts={contacts} />);
+      render(wrapWithContext(<ContactList contacts={contacts} />));
       expect(screen.getAllByRole('listitem').length).toBe(contacts.length);
     },
   );
 
   it.each(contactsTestSets)(
-    'Render the name of each contact in the contacts prop array, with an array of length $length',
+    'Render the name of each contact in the contacts prop array when provided a contacts prop array of length $length',
     (data) => {
       const { contacts } = data;
-      render(<ContactList contacts={contacts} />);
+      render(wrapWithContext(<ContactList contacts={contacts} />));
       for (const contact of contacts) {
         expect(screen.getByText(contact.firstName)).toBeInTheDocument();
       }
@@ -71,51 +99,32 @@ describe('Contact list', () => {
   );
 
   it.each(contactsTestSets)(
-    'Calls the onContactSelected prop function if a contact is selected - test %#',
+    "Upon contact selection, dispatches an action of type 'contact_selected' when provided a contacts prop array of length $length",
     async (data) => {
-      const { contacts } = data;
       const user = userEvent.setup();
-      const mock = vi.fn();
-      render(<ContactList contacts={contacts} onContactSelected={mock} />);
+      const { contacts } = data;
+      render(wrapWithContext(<ContactList contacts={contacts} />));
 
-      for (const contact of contacts) {
-        const element = screen.getByText(contact.firstName);
-        await user.click(element);
-        expect(mock).toHaveBeenCalledTimes(1);
-        vi.clearAllMocks();
+      for (let i = 0; i < contacts.length; i++) {
+        const contact = contacts[i];
+        await user.click(screen.getByText(contact.firstName));
+        expect(dispatchMock).toHaveBeenCalledTimes(i + 1);
       }
     },
   );
 
   it('Does not throw an error if supplied with no contacts prop array, or an array of length zero', () => {
-    expect(() => render(<ContactList />)).not.toThrowError();
-  });
-
-  it('Does not throw error if supplied with no onContactSelected prop function', () => {
-    expect(() =>
-      render(<ContactList contacts={contactsTestSets[0].contacts} />),
-    ).not.toThrowError();
+    expect(() => render(wrapWithContext(<ContactList />))).not.toThrowError();
   });
 
   it('Throws an error if contacts prop is not an array', () => {
     expect(() =>
-      render(<ContactList contacts={'not an array'} />),
-    ).toThrowError();
-  });
-
-  it('Throws an error if onContactSelected prop is not a function', () => {
-    expect(() =>
-      render(
-        <ContactList
-          contacts={contactsTestSets[0].contacts}
-          onContactSelected={'not a function'}
-        />,
-      ),
+      render(wrapWithContext(<ContactList contacts={'not an array'} />)),
     ).toThrowError();
   });
 
   it('Applies className prop to the root element of the component', () => {
-    render(<ContactList className={'someClass'} />);
+    render(wrapWithContext(<ContactList className={'someClass'} />));
     expect(screen.getByTestId('contact-list').classList).toContain('someClass');
   });
 });
