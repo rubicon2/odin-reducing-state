@@ -1,4 +1,6 @@
-import appReducer, { initialState } from '../reducers/appReducer';
+import appReducer, {
+  initialState as defaultState,
+} from '../reducers/appReducer';
 import { createContext, useContext, useReducer } from 'react';
 
 const StateContext = createContext(null);
@@ -12,7 +14,8 @@ export function useAppDispatch() {
   return useContext(DispatchContext);
 }
 
-export default function AppContext({ children }) {
+// Able to pass in an initialState for testing purposes, e.g. init to different values.
+export default function AppContext({ initialState = defaultState, children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   return (
