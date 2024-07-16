@@ -13,7 +13,7 @@ export default function Chat(props) {
         id="message"
         aria-label="chat"
         placeholder="Type your message..."
-        value={state.messages[state.selectedId]}
+        value={state.messages[state.selectedId] || ''}
         onChange={(event) =>
           dispatch({ type: 'message_edited', message: event.target.value })
         }

@@ -83,6 +83,18 @@ describe('Chat interface', () => {
     expect(input.value).toBe('');
   });
 
+  it('Renders an empty string, and therefore placeholder text, if there is no saved draft message for selected contact', () => {
+    render(
+      <AppContext initialState={{ ...initialState, selectedId: 97 }}>
+        <Chat />
+      </AppContext>,
+    );
+    expect(screen.getByRole('textbox').value).toBe('');
+    expect(
+      screen.getByPlaceholderText(/type your message/i),
+    ).toBeInTheDocument();
+  });
+
   it('Applies className prop to the root element of the component', () => {
     render(
       <AppContext>
