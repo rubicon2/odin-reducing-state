@@ -1,4 +1,29 @@
 import { useAppDispatch } from '../../contexts/AppContext';
+import Container from '../container';
+import Heading from '../heading';
+import styled from 'styled-components';
+
+const ContactListContainer = styled(Container)`
+  background-color: pink;
+`;
+
+const Contacts = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: grid;
+  gap: 0.5em;
+`;
+
+const ContactsItem = styled.li`
+  font-weight: 700;
+
+  &:hover {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+`;
 
 export default function ContactList(props) {
   const { contacts = [], className } = props;
@@ -9,20 +34,20 @@ export default function ContactList(props) {
     throw new Error('contacts prop is not an array');
 
   return (
-    <div data-testid="contact-list" className={className}>
-      <h2>Contacts</h2>
-      <ul>
+    <ContactListContainer data-testid="contact-list" className={className}>
+      <Heading level={2}>Contacts</Heading>
+      <Contacts>
         {contacts.map((contact) => (
-          <li
+          <ContactsItem
             key={contact.id}
             onClick={() => {
               dispatch({ type: 'contact_selected', contactId: contact.id });
             }}
           >
             {contact.firstName}
-          </li>
+          </ContactsItem>
         ))}
-      </ul>
-    </div>
+      </Contacts>
+    </ContactListContainer>
   );
 }
