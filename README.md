@@ -21,27 +21,23 @@ For starters, I sit back and think more thoroughly about the component I am desi
 
 Originally the Heading component dynamically generated an element like so, and the tests verified that the correct heading type is returned in accordance with the level prop (the code has been edited for brevity):
 
-```
-  function Heading({ level = 1 }) {
-    const Tag = 'h' + level;
-    return <Tag>Some Heading</Tag>
-  }
+```js
+function Heading({ level = 1 }) {
+  const Tag = 'h' + level;
+  return <Tag>Some Heading</Tag>;
+}
 ```
 
 But once I needed to return a styled component, this was refactored to:
 
-```
-  const StyledHeading = styled.h1`
-    /* styles */
-  `;
+```js
+const StyledHeading = styled.h1`
+  /* styles */
+`;
 
-  function Heading({ level = 1 }) {
-    return (
-      <StyledHeading as={'h' + level}>
-        Some Styled Heading
-      </StyledHeading>
-    );
-  }
+function Heading({ level = 1 }) {
+  return <StyledHeading as={'h' + level}>Some Styled Heading</StyledHeading>;
+}
 ```
 
 And upon save, the test runs and confirms that the heading types are still correctly generated! This is the amazing advantage of testing the end result and not the implementation!
